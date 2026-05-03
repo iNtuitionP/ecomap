@@ -1,0 +1,81 @@
+name: GitHub Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect Flutter project
+        id: flutter
+        run: |
+          if [ -f frontend/pubspec.yaml ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "Flutter project not found. Skipping APK build."
+          fi
+
+      - name: Set up Flutter
+        if: steps.flutter.outputs.exists == 'true'
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Build Flutter APK if frontend exists
+        if: steps.flutter.outputs.exists == 'true'
+        working-directory: frontend
+        run: |
+          flutter pub get
+          flutter build apk --release
+
+      - name: Prepare release artifacts
+        run: |
+          mkdir -p dist
+          cp README.md dist/
+          cp UIUX.png dist/
+
+          if [ -f frontend/build/app/outputs/flutter-apk/app-release.apk ]; then
+            cp frontend/build/app/outputs/flutter-apk/app-release.apk dist/ecomap-${GITHUB_REF_NAME}.apk
+          fi
+
+          if [ -d backend ]; then
+            tar -czf dist/backend-source-${GITHUB_REF_NAME}.tar.gz backend
+          fi
+
+          (cd dist && sha256sum * > SHA256SUMS.txt)
+
+      - name: Generate release notes
+        run: |
+          cat > release-notes.md <<EOF
+          # EcoMap Jjirit ${GITHUB_REF_NAME}
+
+          This release was generated automatically by GitHub Actions.
+
+          Included artifacts:
+          - Project README
+          - UI/UX screen flow image
+          - Flutter release APK, if the frontend project exists
+          - Backend source archive, if the backend project exists
+          - SHA256 checksums
+          EOF
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" dist/* \
+            --title "EcoMap Jjirit ${GITHUB_REF_NAME}" \
+            --notes-file release-notes.md

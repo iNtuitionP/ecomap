@@ -309,12 +309,44 @@ erDiagram
 **Infra**
 
 * Docker
-* AWS EC2 / S3 / RDS
 * GitHub Actions
+* GitHub Artifacts / GitHub Releases
 
 **Authentication**
 
 * Firebase Authentication
+
+---
+
+## GitHub Actions CI/CD
+
+AWS 같은 외부 서버 배포 없이, GitHub Actions만으로 코드 검증과 릴리스 산출물 생성을 자동화합니다.
+
+### CI 워크플로우
+
+`.github/workflows/ci.yml`은 `main`, `develop` 브랜치에 push되거나 pull request가 생성될 때 실행됩니다.
+
+* 현재 저장소 단계: `README.md`, `UIUX.png` 존재 여부와 README의 로컬 이미지 참조 검증
+* 백엔드 추가 이후: `backend/requirements.txt` 또는 `backend/pyproject.toml`이 있으면 Python lint/test 실행
+* 프론트엔드 추가 이후: `frontend/pubspec.yaml`이 있으면 Flutter dependency 설치, `flutter analyze`, `flutter test` 실행
+* CI 통과 시 `README.md`와 `UIUX.png`를 GitHub Actions artifact로 업로드
+
+### CD 워크플로우
+
+`.github/workflows/release.yml`은 `v*` 형식의 Git tag가 push될 때 실행되며, GitHub Release를 자동 생성합니다.
+
+* 기본 산출물: `README.md`, `UIUX.png`, `SHA256SUMS.txt`
+* Flutter 프로젝트가 있으면 release APK 빌드 후 첨부
+* Backend 프로젝트가 있으면 backend source archive를 생성해 첨부
+
+### 릴리스 생성 방법
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+위 명령을 실행하면 GitHub Actions가 자동으로 릴리스 산출물을 만들고 GitHub Release 페이지에 업로드합니다.
 
 ---
 
