@@ -1,2 +1,5 @@
 .gstack/
 .cursor/
+__pycache__/
+*.pyc
+.pytest_cache/
