@@ -2,6 +2,8 @@
 import os
 import sys
 
+import pytest
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from geocode_bins import apply_manual_fixes, fill_rates, parse_bins_csv  # noqa: E402
@@ -40,7 +42,32 @@ def test_apply_manual_fixes_upgrades_failed_to_manual():
 def test_manual_fix_ignores_addresses_not_failed():
     recs = [_rec("경기도 광명시 하안동 229", "ok", "하안동")]
     out = apply_manual_fixes(recs, {"경기도 광명시 하안동 229": (0, 0, "x", "y")})
-    assert out[0]["geocode_status"] == "ok"  # failed 아니면 무시
+    assert out[0]["geocode_status"] == "ok"  # failed 아니면 무시(검증도 안 함)
+
+
+def test_manual_fix_with_swapped_latlng_raises():
+    """lat/lng 뒤바뀜(가장 흔한 수기 오류) → 광명 경계 밖 → fail-fast."""
+    recs = [_rec("경기도 광명시 설월로 10", "failed")]
+    swapped = {"경기도 광명시 설월로 10": (126.87521, 37.44054, "소하동", "소하2동")}
+    with pytest.raises(ValueError, match="광명"):
+        apply_manual_fixes(recs, swapped)
+
+
+def test_manual_fix_outside_gwangmyeong_raises():
+    """인접 시(안양 석수동) 오매칭 좌표 → 광명 봉투 밖 → fail-fast."""
+    recs = [_rec("경기도 광명시 설월로 10", "failed")]
+    anyang = {"경기도 광명시 설월로 10": (37.41730, 126.90779, "소하동", "소하2동")}
+    with pytest.raises(ValueError, match="광명"):
+        apply_manual_fixes(recs, anyang)
+
+
+def test_manual_fix_inside_gwangmyeong_applies():
+    """광명 봉투 안 좌표는 정상 보정된다(경계 검증이 정상값을 막지 않음)."""
+    recs = [_rec("경기도 광명시 설월로 10", "failed")]
+    good = {"경기도 광명시 설월로 10": (37.44054, 126.87521, "소하동", "소하2동")}
+    out = apply_manual_fixes(recs, good)
+    assert out[0]["geocode_status"] == "manual"
+    assert out[0]["lat"] == 37.44054
 
 
 def test_real_csv_parses_all_274_rows():

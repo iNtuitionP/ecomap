@@ -88,3 +88,20 @@ def test_reverse_none_keeps_ok_status_with_null_beopjeong():
     out = geocode_bins([_bin("a")], client)
     assert out[0]["geocode_status"] == "ok"      # 좌표는 있음
     assert out[0]["beopjeong"] is None           # 계약 고정
+
+
+def test_config_error_propagates_not_swallowed():
+    """401/403 같은 설정 오류는 행 단위로 삼키지 말고 즉시 전파(fail fast)."""
+    import pytest
+
+    from geocode_bins import GeocodeConfigError
+
+    class BadAuth:
+        def geocode(self, addr):
+            raise GeocodeConfigError("카카오맵 미활성화(403)")
+
+        def reverse(self, lat, lng):
+            return (None, None)
+
+    with pytest.raises(GeocodeConfigError):
+        geocode_bins([_bin("a")], BadAuth())

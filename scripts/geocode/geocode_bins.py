@@ -11,6 +11,7 @@ import io
 import json
 import os
 import sys
+import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import asdict, dataclass
@@ -20,6 +21,10 @@ _COL_SIGUN, _COL_TYPE, _COL_NAME, _COL_ADDR, _COL_DETAIL, _COL_DAYS = 0, 1, 2, 3
 _FLAG_START, _FLAG_END = 6, 21  # cols 6..20 = 15 flags
 _COL_DEPT, _COL_PHONE = 21, 22
 _HEADER_ROWS = 2
+
+
+class GeocodeConfigError(Exception):
+    """설정/인증 오류(401/403 등). 행 단위 실패가 아니라 파이프라인을 즉시 멈춰야 함."""
 
 
 @dataclass
@@ -86,6 +91,8 @@ def geocode_bins(bins: list[Bin], client) -> list[dict]:
         else:
             try:
                 coords = client.geocode(b.addr)
+            except GeocodeConfigError:  # 설정 오류는 즉시 전파(전 행 조용히 실패 방지)
+                raise
             except Exception:  # 네트워크/쿼터/파싱 실패 → 실패행, 전체 크래시 방지
                 coords = None
             coord_cache[b.addr] = coords
@@ -150,8 +157,14 @@ class KakaoClient:
         req = urllib.request.Request(
             f"{url}?{q}", headers={"Authorization": f"KakaoAK {self.api_key}"}
         )
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            return json.load(resp)
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                return json.load(resp)
+        except urllib.error.HTTPError as e:
+            if e.code in (401, 403):  # 키/서비스 설정 오류 → fail fast
+                body = e.read().decode("utf-8", "replace")
+                raise GeocodeConfigError(f"Kakao {e.code}: {body}") from e
+            raise  # 그 외(400/429/5xx)는 호출부에서 행 단위 실패 처리
 
     def geocode(self, addr: str):
         return parse_kakao_geocode_response(self._get(self.GEOCODE_URL, {"query": addr}))
@@ -170,11 +183,31 @@ def fill_rates(records: list[dict]) -> dict[str, float]:
     return {"coords": has_coords / total, "beopjeong": has_beop / total}
 
 
+# 광명시 좌표 봉투(270개 Kakao-검증 ok행 실측 범위 + ~1km 여유).
+# 수기 보정값 sanity 게이트: lat/lng 뒤바뀜·인접 시(안양 석수동 등) 오매칭을 잡는다.
+# 게이트(채움률)는 그럴듯하지만 틀린 manual 좌표를 못 거르므로 여기서 fail-fast.
+_GM_LAT = (37.40, 37.51)
+_GM_LNG = (126.82, 126.90)
+
+
+def _validate_manual_coord(addr: str, lat, lng) -> None:
+    if not (_GM_LAT[0] <= lat <= _GM_LAT[1] and _GM_LNG[0] <= lng <= _GM_LNG[1]):
+        raise ValueError(
+            f"수기 보정 좌표가 광명시 경계 밖: '{addr}' → ({lat}, {lng}). "
+            f"lat/lng 뒤바뀜 또는 인접 시 오매칭 의심 — manual_fixes.json 확인. "
+            f"허용범위 lat{_GM_LAT} lng{_GM_LNG}."
+        )
+
+
 def apply_manual_fixes(records: list[dict], fixes: dict[str, tuple]) -> list[dict]:
-    """failed 행을 수기 좌표로 보정 → status 'manual'. fixes[addr]=(lat,lng,법정동,행정동)."""
+    """failed 행을 수기 좌표로 보정 → status 'manual'. fixes[addr]=(lat,lng,법정동,행정동).
+
+    보정 적용 전 좌표가 광명시 봉투 안인지 검증(밖이면 ValueError로 빌드 중단).
+    """
     for r in records:
         if r["geocode_status"] == "failed" and r["addr"] in fixes:
             lat, lng, beop, haeng = fixes[r["addr"]]
+            _validate_manual_coord(r["addr"], lat, lng)
             r.update(lat=lat, lng=lng, beopjeong=beop, haengjeong=haeng,
                      geocode_status="manual")
     return records
@@ -248,7 +281,15 @@ def main(argv: list[str] | None = None) -> int:
         with open(fpath, encoding="utf-8") as f:
             fixes = {k: tuple(v) for k, v in json.load(f).items()}
 
-    records = run_pipeline(_DEFAULT_CSV, _DEFAULT_OUT, KakaoClient(key), manual_fixes=fixes)
+    try:
+        records = run_pipeline(_DEFAULT_CSV, _DEFAULT_OUT, KakaoClient(key), manual_fixes=fixes)
+    except GeocodeConfigError as e:
+        print(
+            f"Kakao 설정 오류로 중단(동결 안 함): {e}\n"
+            "  → developers.kakao.com > 내 애플리케이션 > [앱] > 카카오맵 서비스 '활성화 ON' 후 재실행.",
+            file=sys.stderr,
+        )
+        return 2
     rates = fill_rates(records)
     failed = [r for r in records if r["geocode_status"] == "failed"]
     print(f"동결: {_DEFAULT_OUT} ({len(records)}행)")
