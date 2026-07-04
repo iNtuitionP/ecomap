@@ -1,16 +1,19 @@
 <div align="center">
 
+<img src="assets/ecomap_logo_2.png" alt="에코지도 찌릿 로고" width="120" />
+
 <h1>에코지도 찌릿</h1>
 <h3>EcoMap Jjirit</h3>
 
-<p><strong>위치정보를 활용한 플라스틱 처리 AI 앱서비스</strong></p>
+<p><strong>사진으로 확인하는 분리배출 · 품목별 수거함 지도 · 시(市) 공백분석</strong></p>
 <p>2026 광명시 청년 생각펼침 공모사업 프로젝트</p>
 
 <p>
-  <img src="https://img.shields.io/badge/version-1.0.0-blue.svg" alt="Version" />
+  <img src="https://img.shields.io/badge/공모-2026_광명시_청년_생각펼침-2E7D46" alt="Contest" />
+  <img src="https://img.shields.io/badge/데모-7월_프로토타입-8FD9A8" alt="Prototype" />
   <img src="https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter" alt="Flutter" />
-  <img src="https://img.shields.io/badge/FastAPI-0.100+-009688?logo=fastapi" alt="FastAPI" />
-  <img src="https://img.shields.io/badge/PostgreSQL-PostGIS-336791?logo=postgresql" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/Kakao-Maps_&_Local-FFCD00?logo=kakao&logoColor=000000" alt="Kakao" />
+  <img src="https://img.shields.io/badge/Claude-Vision-D97757" alt="Claude Vision" />
   <img src="https://img.shields.io/badge/Rule--Based-Guide-4CAF50" alt="Rule-Based Guide" />
 </p>
 
@@ -18,394 +21,285 @@
 
 ---
 
-## 프로젝트 개요
+## 한 줄 소개
 
-**에코지도 찌릿**은 사용자의 위치와 지역 환경 데이터를 기반으로 플라스틱 분리배출 방법, 가까운 재활용 수거함, 친환경 매장을 안내하는 환경 실천 서비스입니다.
+> **AI는 "무엇인지"를 알려주고, 룰은 "어떻게 버리는지"를 정한다.**
+> 사진 한 장으로 분리배출법을 안내하고, 그 품목을 받는 **가장 가까운 수거함**을 광명시 실데이터로 찾아주며,
+> 시민의 사용 기록을 모아 **광명시가 어디에 무엇이 부족한지(수거 공백)** 를 짚어 주는 civic 도구.
 
-사용자는 QR/바코드 스캔으로 제품을 식별하면, 등록된 제품 재질 정보를 기반으로 **결정론적 룰베이스 분리배출 가이드**를 제공합니다. 분리배출·텀블러 사용·친환경 매장 방문 같은 실천 활동을 기록해 환경 포인트와 랭킹으로 피드백을 받을 수 있습니다.
+**에코지도 찌릿**은 상업 서비스가 아니라 **공모전 출품작**입니다. 평가 기준은 매출이 아니라 심사위원(시 공무원) 임팩트 · 실사용 가능성 · 공모 취지 적합성 · 4~10월 일정 내 데모입니다.
 
-## 서비스 목표
+## 누구를 위한 것인가 (리프레임)
 
-> 광명시 청년과 시민이 일상 속에서 더 쉽게 분리배출하고, 친환경 장소를 찾고, 환경 실천을 지속하도록 돕는 지역 기반 ESG 플랫폼을 만든다.
+기획 초기에는 "시민을 분리배출에 빠지게 하는 앱"을 목표했지만, 팀 스스로 **"시민이 이 앱을 쓸 강력한 동인은 아직 약하다"** 는 점을 정직하게 인정했습니다. 그래서 방향을 바꿨습니다.
 
-**주요 사용자**
+| | 기존(구 설계) | 현재(리프레임) |
+|---|---|---|
+| **핵심 고객** | 개인 시민 (B2C) | **광명시 자원순환과 (B2G)** |
+| **헤드라인** | 바코드 스캔 → 재질 조회 | **이미지 인식 가이드 + 품목별 수거함 지도 + 공백분석** |
+| **시민의 역할** | 사용 동인(약함) | **데이터 생성원** — 쓰는 만큼 시 정책 데이터가 쌓임 |
+| **바코드** | 핵심 기능 | **데모용으로 강등** (한국에 공개 바코드→재질 DB 없음) |
 
-* 광명시 청년, 대학생, 자취생, 1인 가구
-* 분리배출 방법이 헷갈리는 일반 시민
-* 제로웨이스트 샵, 탄소중립 실천 매장 등 지역 친환경 비즈니스
+시민에겐 **"이거 어떻게 버리지?"** 를 즉시 푸는 실용을 주고, 시엔 그 사용에서 나오는 **수거 인프라 공백 지도**를 줍니다.
 
-**핵심 가치**
+## 전략 — "마지막 30미터"
 
-* 위치 기반으로 가까운 환경 시설을 빠르게 안내
-* 플라스틱 제품별 분리배출 방법을 쉽게 제공
-* 환경 실천을 포인트, 랭킹, 리포트로 시각화
-* 공공데이터와 현장 데이터를 연결해 지역 ESG 활동 기반 구축
+경기도 **기후행동 기회소득**(약 200만 명 대상, 텀블러·자전거·분리배출까지 보상)과 **넓이로 경쟁하지 않습니다.** 제도는 경쟁자가 아니라 **보완재이자 배경 근거**입니다.
 
----
-
-## 핵심 기능
-
-### 바코드 기반 룰베이스 분리배출 가이드
-
-스마트폰 카메라로 제품의 QR/바코드를 스캔하면 서버에 등록된 제품 마스터 DB에서 **재질(PET, HDPE, PP, 종이, 유리 등)을 조회**합니다. 재질이 특정되면 환경부·지자체 분리배출 표시 규정에 따라 미리 정의된 **룰베이스 가이드라인**(라벨 제거, 내용물 비우기, 압착 여부 등)을 즉시 제공합니다.
-
-* AI 추론 단계가 없어 응답이 빠르고 결정론적으로 동작
-* 환경부/지자체 가이드 변경 시 DB(`RECYCLE_GUIDES`)만 갱신하면 즉시 반영
-* 미등록 바코드는 사용자가 재질을 직접 선택하면 동일한 룰베이스 가이드를 제공하는 fallback 플로우 운영
-
-### 위치 기반 에코 지도
-
-사용자 현재 위치를 기준으로 광명시 내 재활용 수거함, 쓰레기통, 제로웨이스트 샵, 탄소중립 실천 매장을 지도에 표시합니다. 장소 상세 정보, 거리, 이동 경로, 배출 가능 품목을 함께 제공합니다.
-
-### 환경 포인트와 랭킹
-
-분리배출 인증, 텀블러 사용, 친환경 매장 방문 등 사용자의 실천 활동을 기록합니다. 누적 기록을 기반으로 환경 포인트, 개인 리포트, 사용자/지역별 랭킹을 제공합니다.
-
-### 데이터 기반 운영
-
-공공데이터, 현장 답사 데이터, 사용자 실천 데이터를 DB에 누적합니다. 향후 광명시 ESG 정책 제안, 친환경 매장 협업, 서비스 고도화를 위한 분석 기반으로 활용할 수 있게 설계합니다.
+우리는 제도가 못 푸는 **"분리배출을 정확히 어디에·어떻게"** 라는 마지막 30미터를 광명시 실데이터로 좁게·깊게 풉니다. 실보상(탄소중립포인트·광명사랑화폐) 연계는 로드맵으로 두되, "공식 인증 채널"을 참칭하지 않고 **"광명시 특화 분리배출 인증·데이터 파일럿 제안"** 수준까지만 주장합니다.
 
 ---
 
-## 화면 구성
+## 핵심 기능 (3축)
 
-스마트 분리수거 서비스 앱의 단계별 화면 흐름입니다.
+### 1. 이미지 인식 분리배출 가이드
+
+카메라로 배출할 물건을 찍으면 **Claude 비전**이 **8개 품목 카테고리**(무색페트병·캔/고철·종이·비닐·유리병·스티로폼·종이팩·기타)와 신뢰도를 반환합니다. 카테고리가 정해지면 **결정론적 룰베이스 가이드**(라벨 떼기·헹구기·압착 등)를 즉시 보여 줍니다.
+
+* **AI는 분류만, 배출법은 룰이 결정** — 응답이 빠르고 근거가 명확
+* 신뢰도 < 0.7이면 **8품목 수동 선택 fallback** (크래시·빈화면 없음)
+* 환경부/광명시 가이드 변경 시 `shared/rules.json`만 갱신
+* 제품명·브랜드는 표시하지 않음 (재질 DB 참칭 방지)
+
+### 2. 품목별 수거함 지도
+
+광명시 자원순환과가 제공한 **실 수거함 데이터 274개**를 지오코딩해, **인식한 품목을 실제로 받는 거점만** 필터링하고 사용자 위치 기준 거리순으로 안내합니다.
+
+* 품목 Y/N 커버리지로 필터 → 거리순 정렬 → 최근접 핀·리스트
+* **거점이 0개인 사각지대**(예: 특정 동의 스티로폼)는 숨기지 않고 *"근처에 없음 + 가장 가까운 동 + 이 사각지대를 광명시에 알리기"* 로 안내
+
+### 3. 시(市) 수거 공백분석 정책카드 — 데모 클라이맥스
+
+동결된 수거함 데이터의 **법정동 × 품목 매트릭스**에서 *"Y 거점이 0인 칸"* = 정책 후보를 자동 산출합니다. 시민 트래픽이 0이어도 **오늘 있는 공공데이터만으로** 정책 근거가 나옵니다.
+
+> 실데이터 검증 예: **스티로폼 수거 거점은 일직동에만 4곳**, 나머지 6개 법정동(하안·소하·가학·광명·철산·옥길)은 **0곳**.
+
+---
+
+## 데모 흐름
 
 <div align="center">
-  <img src="UIUX.png" alt="에코지도 찌릿 화면 흐름" width="720" />
+  <img src="designs/demo-flow.png" alt="에코지도 찌릿 핵심 데모 흐름 6화면" width="820" />
 </div>
-
-| 단계 | 화면 | 설명 |
-|:----:|:----|:----|
-| 1 | 스플래시 / 메인 | 앱 실행 시 진입 화면 |
-| 2 | QR / 바코드 스캔 | 제품의 QR 또는 바코드를 스캔 |
-| 3 | 제품 정보 확인 | 인식된 제품 정보 및 재질(예: PET) 확인 |
-| 4 | 분리수거 장소 안내 | 분리수거 가능 장소 목록 (거리순) |
-| 5 | 지도 기반 동선 안내 | GIS 기반 최적 경로 제공 |
-| 6 | 길 안내 (내비게이션) | 실시간 경로 안내 |
-| 7 | 도착지 정보 | 수거함 운영시간·수거품목·안내사항 확인 |
-| 8 | 배출 인증 (선택) | 사진 촬영 후 배출 완료 인증 |
-| 9 | 분리수거 가이드 | 재질별 룰베이스 분리수거 방법 안내 |
-| 10 | 내 배출 기록 | 월별 배출 횟수 및 적립 포인트 기록 |
-| 11 | 알림 / 공지 | 공지사항 및 알림 확인 |
-| 12 | 설정 / 마이페이지 | 앱 설정 및 사용자 정보 관리 |
-
----
-
-## 사용자 시나리오 (Sequence Diagram)
 
 ```mermaid
 sequenceDiagram
-    actor User as 사용자
-    participant App as 에코지도 앱 (App)
-    participant Server as 백엔드 (Server/DB)
+    actor U as 시민
+    participant App as 에코지도 앱
+    participant AI as Claude 비전
+    participant J as 동봉 데이터(JSON)
 
-    User->>App: 1. 앱 실행 (메인 화면)
-    User->>App: 2. 제품 QR/바코드 스캔 (또는 검색)
-    App->>Server: 3. 제품 식별 정보 전송
-    Server-->>App: 4. 제품 재질 및 분리수거 가이드 반환
-    App-->>User: 5. 제품 정보 및 분리수거 방법 화면 표시
+    U->>App: 1. 배출할 물건 촬영
+    App->>AI: 2. 사진 1콜 (품목 카테고리 요청)
+    AI-->>App: 3. 8카테고리 + confidence
+    App->>J: 4. rules.json 조회
+    J-->>App: 5. 룰베이스 분리배출 단계
+    App-->>U: 6. "무엇인지(AI) + 어떻게(룰)" 가이드
 
-    User->>App: 6. 분리수거 장소 안내 요청
-    App->>Server: 7. 사용자 GPS 위치 데이터 전송
-    Server-->>App: 8. 주변 수거함 목록 (거리순) 반환
-    App-->>User: 9. 분리수거 가능 장소 목록 제공
+    U->>App: 7. "이 품목 받는 수거함 찾기"
+    App->>J: 8. bins.geocoded.json 품목 필터 + 거리순
+    J-->>App: 9. 최근접 거점 (없으면 사각지대)
+    App-->>U: 10. 지도 핀·리스트 (또는 "근처 없음")
 
-    User->>App: 10. 특정 수거함 선택 (길 안내 시작)
-    App-->>User: 11. 지도 기반 실시간 동선 안내 (내비게이션)
-
-    User->>App: 12. 목적지 도착 및 수거함 정보 확인
-    User->>App: 13. 쓰레기 배출 및 사진 인증
-    App->>Server: 14. 배출 인증 데이터 전송
-    Server-->>App: 15. 인증 승인 및 에코 포인트 적립
-    App-->>User: 16. 배출 인증 완료 메시지 출력
-
-    User->>App: 17. 내 배출 기록 메뉴 진입
-    App->>Server: 18. 배출 내역 및 포인트 조회 요청
-    Server-->>App: 19. 월별 배출 기록 및 누적 포인트 반환
-    App-->>User: 20. 총 배출 횟수 및 획득 포인트 화면 표시
+    Note over App,J: 데모 클라이맥스 — 어드민
+    U->>App: 11. 어드민 공백분석 진입
+    App->>J: 12. policy_cards.json
+    J-->>App: 13. 법정동×품목 공백 Top3
+    App-->>U: 14. "스티로폼: 일직동에만, 6개 동 0" 정책카드
 ```
 
-> **핵심 포인트(3~4단계):** 제품 식별은 바코드만으로 결정론적으로 이루어지며, 서버는 등록된 제품 재질에 매칭된 **룰베이스 가이드**를 즉시 반환합니다. 별도의 AI 추론 단계가 없어 응답 속도와 정확도가 모두 보장됩니다.
+## 화면 구성
+
+핵심 데모 6화면 + 보조 화면으로 구성한 **프로토타입**입니다 (풀 서비스 아님).
+
+| # | 화면 | 설명 |
+|:--:|:--|:--|
+| 1 | 스캔 (카메라) | 배출할 물건을 촬영 |
+| 2 | 인식 결과 | 8카테고리 배지 + 가이드 미리보기 + "수거함 찾기" |
+| 3 | 분리배출 가이드 | 카테고리별 룰베이스 단계·주의사항 |
+| 4 | 수거함 지도 | 해당 품목 받는 거점만 거리순 핀·리스트 |
+| 5 | 사각지대(빈 상태) | 거점 0개 → 가장 가까운 동 안내 + 시에 알리기 |
+| 6 | **어드민 공백분석** | 법정동×품목 공백 정책카드 Top3 (클라이맥스) |
+
+<div align="center">
+  <img src="designs/rest-screens.png" alt="보조 화면 목업" width="820" />
+  <br/><br/>
+  <img src="designs/new-screens.png" alt="신규 화면 목업 (수동선택 fallback · 빈 상태 · 어드민)" width="820" />
+</div>
+
+> 포인트·랭킹·실천 기록 화면은 **삭제가 아니라 로드맵**입니다. 인식 효용(Hook)으로 사용을 유도하고, **측정 게이트를 통과한 뒤** 포인트/랭킹을 단계적으로 도입, 실보상 연계는 그다음입니다.
 
 ---
 
-## 내가 맡을 개발 범위
+## 아키텍처
 
-기획 자료 기준 개발 파트의 핵심 목표는 **광명시 친환경 데이터를 지도에서 탐색하고, 플라스틱 분리배출 방법을 안내하며, 사용자의 환경 실천을 포인트/랭킹으로 기록하는 프로토타입**을 만드는 것입니다.
-
-### MVP 구현 우선순위
-
-1. **지도 기반 장소 탐색**
-   * 광명시 재활용 수거함, 쓰레기통, 제로웨이스트 샵, 탄소중립 실천 매장 데이터 수집/정제
-   * 사용자 위치 기준 가까운 장소 표시
-   * 장소 상세 정보, 배출 가능 품목, 이동 경로 제공
-   * 공공데이터가 부족할 경우 현장 답사 데이터 또는 수동 등록 데이터 활용
-
-2. **바코드 기반 분리배출 인식 및 가이드**
-   * QR/바코드 스캔으로 제품 식별 (`PRODUCTS` 테이블 조회)
-   * 식별된 제품의 재질(`material_type`)을 기반으로 룰베이스 가이드 매칭 (`RECYCLE_GUIDES` 테이블)
-   * 라벨 제거, 내용물 비우기, 압착 등 단계별 분리배출 액션 제공
-   * 미등록 바코드인 경우 사용자가 직접 재질을 선택하면 동일한 룰베이스 가이드 제공
-   * 환경부/지자체 가이드 변경 시 `RECYCLE_GUIDES` 테이블만 갱신
-
-3. **환경 실천 기록과 보상**
-   * 분리배출 인증, 텀블러 사용, 친환경 매장 방문 기록
-   * 환경 포인트 적립
-   * 개인 리포트와 사용자/지역 랭킹 제공
-   * 실제 제휴 전까지 내부 테스트용 포인트 정책으로 운영
-
-4. **백엔드와 데이터 관리**
-   * 사용자, 장소, 분리배출 가이드, 인증 기록, 포인트 API 개발
-   * PostgreSQL/PostGIS 기반 위치 검색과 거리 계산
-   * 운영자가 장소/수거함 데이터를 등록·수정할 수 있는 관리 API 준비
-
-5. **배포와 운영 기반**
-   * Docker 기반 개발/배포 환경 구성
-   * 클라우드 서버에서 프로토타입 실행
-   * 지도 SDK, 공공데이터 API 키 등 민감 정보 환경 변수 분리
-   * 테스트 데이터와 실제 수집 데이터 분리
-
-### 개발 산출물
-
-* **Flutter 앱:** 지도, 장소 상세, QR/바코드 스캔, 분리배출 안내, 실천 인증, 포인트/랭킹, 개인 리포트
-* **FastAPI 서버:** 인증 연동, 장소 검색, 분리배출 가이드, 실천 기록, 포인트 적립, 랭킹 조회 API
-* **데이터베이스:** 사용자, 친환경 장소/수거함, 제품/재질 정보, 실천 기록, 포인트 로그, 랭킹 집계 테이블
-* **데이터 파이프라인:** 공공데이터와 현장 답사 데이터를 정제해 DB에 적재하는 스크립트
-* **인식·가이드 엔진:** QR/바코드 기반 제품 식별 + 재질별 룰베이스 가이드 매칭 엔진 (조건문/JSON 룰셋 기반, 확장 가능한 구조)
-
-### 개발 시 먼저 결정할 것
-
-* 지도 SDK는 Naver Maps, Kakao Maps, Google Maps 중 비용, 상업 이용 조건, Flutter 지원 상태를 비교해 결정
-* 제품 마스터 DB 확보 방안 결정: 식약처/환경부 공공데이터, GS1 Korea 연동, 자체 크롤링 중 우선순위
-* 미등록 바코드 fallback 정책: 사용자 수동 재질 선택 → 운영자 검수 후 DB 등록 플로우 설계
-* 포인트는 실제 현금성 보상 전까지 서비스 내부 포인트로 운영
-* 위치정보와 인증 이미지를 다루므로 개인정보 수집 동의, 보관 기간, 삭제 정책 포함
-
----
-
-## 시스템 아키텍처
+**7월 데모의 원칙: 라이브 백엔드 0.** 지도·최근접·공백분석은 전부 **빌드타임에 JSON으로 precompute**해 앱에 동봉합니다. 274행 최근접은 클라이언트 distance sort로 충분(데모에 PostGIS 불필요). FastAPI/PostGIS 척추는 실사용 로깅이 시작되는 **8월**로 미룹니다.
 
 ```mermaid
 graph TD
-    Client[Mobile App - Flutter] -->|REST API| API[API Gateway - FastAPI]
-
-    subgraph Backend Services
-        API --> Auth[Auth Service]
-        API --> Guide[Recycle Guide Service]
-        API --> Map[GIS Map Service]
-        API --> Reward[Point Service]
+    subgraph Build["빌드타임 (1회 · 커밋 동결)"]
+        CSV["자원순환과 CSV<br/>274행"] -->|Kakao 지오코딩 + 역지오코딩| Bins["data/bins.geocoded.json<br/>좌표 · 법정동 · 품목"]
+        Bins -->|법정동 × 품목 매트릭스| Cards["data/policy_cards.json<br/>공백 정책카드"]
     end
 
-    Auth --> Firebase[Firebase Auth]
-    Guide --> RuleEngine[Rule-Based Engine<br/>재질 → 가이드 매핑]
+    subgraph App["7월 데모 앱 · Flutter (라이브 백엔드 0)"]
+        UI["카메라 · 지도 · 어드민 화면"]
+        UI -->|사진 1콜| Vision["Claude 비전 API<br/>8카테고리 + confidence"]
+        UI -->|동봉 JSON 읽기| Data["bins.geocoded.json<br/>mapping.json · rules.json<br/>policy_cards.json"]
+    end
 
-    Guide --> DB[(PostgreSQL + PostGIS)]
-    Map --> DB
-    Reward --> DB
-    Auth --> DB
+    Bins -. 동봉 .-> Data
+    Cards -. 동봉 .-> Data
 
-    Guide --> ProductDB[제품 마스터 DB<br/>바코드 · 재질 정보]
-    Map --> OpenData[광명시 공공데이터 / 현장 답사 데이터]
+    subgraph Future["8월+ · 측정 게이트 통과 후"]
+        FastAPI["FastAPI · PostGIS<br/>RECOG_EVENTS 실로깅 · 어드민 · 프록시"]
+    end
+    App -. 승격 .-> Future
 ```
 
-## 데이터베이스 구조
+### 데이터 계약 (단일 소스)
+
+앱과 빌드 스크립트가 **공유**하는 파일. 양쪽에 중복 정의 금지.
+
+| 파일 | 역할 |
+|---|---|
+| `shared/mapping.json` | 인식 8카테고리 ↔ CSV 15플래그 매핑 (역매핑 유일성 보장) |
+| `shared/rules.json` | 카테고리 → 배출 단계·주의사항 (환경부/광명시 가이드 인용) |
+| `data/bins.geocoded.json` | 지오코딩 동결 산출물 (좌표·법정동·행정동·품목 Y/N) |
+| `data/policy_cards.json` | 공백분석 정책카드 (법정동×품목 산출) |
+
+### 데이터 모델 (앱 로컬 SQLite · 8월 PostGIS 이관)
 
 ```mermaid
 erDiagram
-    USERS {
-        uuid id PK
-        string nickname
-        string email
-        int total_points
-        timestamp created_at
-    }
-
-    RECYCLE_BINS {
+    RECOG_EVENTS {
         int id PK
-        string bin_type
-        geometry location
-        string address
+        text ts
+        real lat
+        real lng
+        text dong
+        text category "8카테고리 id"
+        text csv_flag "매핑된 CSV 플래그"
+        real confidence
+        int manual_fallback "0/1"
+        text install_id "익명 UUID"
+        text session_id
     }
-
-    ECO_PLACES {
-        int id PK
-        string name
-        string place_type
-        geometry location
-        string address
-    }
-
-    PRODUCTS {
-        string barcode PK
-        string product_name
-        string brand
-        string material_type FK
-        string image_url
-        timestamp created_at
-    }
-
-    RECYCLE_GUIDES {
-        int id PK
-        string material_type
-        string bin_category
-        json steps
-        string caution
-        string source
-    }
-
-    RECYCLE_HISTORIES {
-        int id PK
-        uuid user_id FK
-        int bin_id FK
-        string barcode FK
-        string material_type
-        float saved_co2
-        timestamp created_at
-    }
-
     POINT_LOGS {
         int id PK
-        uuid user_id FK
+        text install_id
         int points
-        string reason
-        timestamp created_at
+        text reason
+        text ts
     }
-
-    USERS ||--o{ RECYCLE_HISTORIES : records
-    USERS ||--o{ POINT_LOGS : earns
-    RECYCLE_BINS ||--o{ RECYCLE_HISTORIES : receives
-    PRODUCTS ||--o{ RECYCLE_HISTORIES : scanned_in
-    RECYCLE_GUIDES ||--o{ PRODUCTS : guides
 ```
+
+> 데모에서 `RECOG_EVENTS`는 로컬/시드, `POINT_LOGS`는 **테이블만 생성**(적립 로직·UI는 측정 게이트 후). install-id는 앱 첫 실행 시 생성하는 익명 UUID로, 개인정보 없이 사용 패턴만 집계합니다.
+
+---
+
+## 데이터: 광명시 자원순환과 CSV → 지오코딩 동결
+
+프로젝트의 데이터 척추. 자원순환과 제공 CSV(수거함 **274행**, 좌표 없음, 도로명 259 / 지번 15)를 **빌드타임 1회** Kakao로 지오코딩해 좌표 + **역지오코딩 법정동/행정동** + 15품목 플래그로 동결합니다. 런타임 지오코딩은 금지 — 앱은 동결 JSON만 읽습니다.
+
+**현재 상태 (T1 완료, 2026-07-03):**
+
+| 지표 | 값 |
+|---|---|
+| 총 수거함 | 274행 (270 ok / 4 manual / 0 failed) |
+| 좌표 채움률 | **100%** |
+| 법정동 채움률 | **100%** |
+| 검증 | 전 좌표 라이브 Kakao 역지오코딩 재검증 (독립 감사) |
+
+Kakao가 못 잡은 3주소는 원본 CSV의 랜드마크(공원·복지회관)를 키워드 검색해 보정하고, **광명시 좌표 봉투 밖 값은 빌드를 중단**시키는 sanity 가드로 오배정을 차단합니다. 자세한 사용법은 [`scripts/geocode/README.md`](scripts/geocode/README.md) 참고.
 
 ---
 
 ## 기술 스택
 
-**Frontend**
+**Frontend** · Flutter · Riverpod · **Kakao Maps SDK**
 
-* Flutter
-* Riverpod
-* Naver Maps / Kakao Maps / Google Maps SDK 후보
+**인식 · 가이드 엔진** · **Claude 비전**(사진 → 8카테고리 + confidence, 구조화 출력) · 룰베이스 가이드 엔진(`shared/rules.json`) · 결정론적 배출법 매핑
 
-**Backend**
+**데이터 파이프라인** · Python · **Kakao Local API**(주소→좌표, 좌표→법정동/행정동) · 빌드타임 precompute → JSON 동결
 
-* Python
-* FastAPI
-* SQLAlchemy
+**Backend (8월+)** · FastAPI · SQLAlchemy · PostgreSQL + PostGIS *(7월 데모에는 미사용)*
 
-**Database**
+**Infra** · Docker · GitHub Actions · GitHub Releases(APK 배포)
 
-* PostgreSQL
-* PostGIS
+> 멀티모달 API 키는 데모 시 앱 임베드(통제·데모 후 로테이트), 실사용 배포 APK에는 노출 금지 → **8월 프록시** 뒤로 이관.
 
-**인식 · 가이드 엔진**
+---
 
-* QR / 바코드 스캔 (Flutter `mobile_scanner` 등)
-* 룰베이스 가이드 엔진 (재질 → 분리배출 액션 매핑)
-* 제품 마스터 DB 기반 결정론적 추론 (별도 ML 모델 미사용)
+## 구현 태스크 (T1~T10)
 
-**Infra**
+7월 프로토타입 범위. 상세 명세·수용기준은 [`SPEC.md`](SPEC.md).
 
-* Docker
-* GitHub Actions
-* GitHub Artifacts / GitHub Releases
+```
+T1 지오코딩 ─┬─> T3 공백분석 ──> T8 어드민 정책카드(클라이맥스)
+             ├─> T6 최근접(좌표)
+T2 검증게이트 ┘
 
-**Authentication**
+T4 매핑 단일소스 ──> T5 인식 플로우 ──> T6 최근접 ──> T7 이벤트로깅
+                                    └─> T9 eval
+T10 데모각본 (T5·T8 후 마지막)
+```
 
-* Firebase Authentication
+| ID | 태스크 | 상태 |
+|---|---|:--:|
+| **T1** | geocode-pipeline — CSV 지오코딩 동결 (단일 실패점) | ✅ 완료 |
+| T2 | geocode-verify — 매칭률·행정동 게이트 | ⬜ |
+| T3 | gap-analysis — 법정동×품목 공백 → 정책카드 | ⬜ |
+| T4 | mapping-single-source — `shared/mapping.json`·`rules.json` | ⬜ (키 불필요) |
+| T5 | recognition-flow — Claude 비전 인식 (⚠️ API 키 blocking) | ⬜ |
+| T6 | nearest-empty-edge — 최근접 + 사각지대 graceful | ⬜ |
+| T7 | recog-events — 익명 이벤트 로깅 | ⬜ |
+| T8 | admin-policy-cards — 공백분석 어드민 화면 | ⬜ |
+| T9 | multimodal-eval — 인식 품질 eval | ⬜ |
+| T10 | demo-script — 5분 데모 각본 | ⬜ |
 
 ---
 
 ## GitHub Actions CI/CD
 
-AWS 같은 외부 서버 배포 없이, GitHub Actions만으로 코드 검증과 릴리스 산출물 생성을 자동화합니다.
+외부 서버 배포 없이 GitHub Actions로 코드 검증·릴리스 산출물 생성을 자동화합니다.
 
-### CI 워크플로우
-
-`.github/workflows/ci.yml`은 `main`, `develop` 브랜치에 push되거나 pull request가 생성될 때 실행됩니다.
-
-* 현재 저장소 단계: `README.md`, `UIUX.png` 존재 여부와 README의 로컬 이미지 참조 검증
-* 백엔드 추가 이후: `backend/requirements.txt` 또는 `backend/pyproject.toml`이 있으면 Python lint/test 실행
-* 프론트엔드 추가 이후: `frontend/pubspec.yaml`이 있으면 Flutter dependency 설치, `flutter analyze`, `flutter test` 실행
-* CI 통과 시 `README.md`와 `UIUX.png`를 GitHub Actions artifact로 업로드
-
-### CD 워크플로우
-
-`.github/workflows/release.yml`은 `v*` 형식의 Git tag가 push될 때 실행되며, GitHub Release를 자동 생성합니다.
-
-* 기본 산출물: `README.md`, `UIUX.png`, `SHA256SUMS.txt`
-* Flutter 프로젝트가 있으면 release APK 빌드 후 첨부
-* Backend 프로젝트가 있으면 backend source archive를 생성해 첨부
-
-### 릴리스 생성 방법
+* **CI** (`.github/workflows/ci.yml`, `main`·`develop` push / PR): 필수 파일·README 이미지 참조 검증 → backend(`backend/`) 있으면 ruff+pytest → frontend(`frontend/`) 있으면 `flutter analyze`+`flutter test` → 계획 산출물 artifact 업로드
+* **CD** (`.github/workflows/release.yml`, `v*` 태그): GitHub Release 자동 생성, Flutter APK / backend archive 첨부
 
 ```bash
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.1.0 && git push origin v0.1.0   # 릴리스 산출물 자동 생성
 ```
-
-위 명령을 실행하면 GitHub Actions가 자동으로 릴리스 산출물을 만들고 GitHub Release 페이지에 업로드합니다.
-
----
 
 ## 설치 및 실행
 
-### 1. Repository 클론
+### 데이터 파이프라인 (T1 · 현재 실행 가능)
 
 ```bash
-git clone https://github.com/your-username/eco-map-jjirit.git
-cd eco-map-jjirit
+export KAKAO_REST_KEY="<카카오 REST API 키>"   # Windows: set KAKAO_REST_KEY=...
+python scripts/geocode/geocode_bins.py         # bins.geocoded.json 동결 (멱등)
+python -m pytest scripts/geocode/tests -q      # 31 테스트 (키 불필요, Kakao 목킹)
 ```
 
-### 2. 백엔드 실행
+### 앱 / 백엔드 (구현 예정)
 
 ```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-
-cp .env.example .env
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-### 3. 프론트엔드 실행
-
-```bash
-cd frontend
-flutter pub get
-flutter run
+# frontend/ (Flutter) · backend/ (FastAPI) 프로젝트는 T4~ 착수 시 생성
+cd frontend && flutter pub get && flutter run
 ```
 
 ---
 
 ## 개발 일정
 
-**2026년 4월**
-
-광명시 친환경 매장 리스트업, 유사 서비스 벤치마킹, 현장 답사
-
-**2026년 5월**
-
-기능 명세서 확정, UI/UX 설계, 지도 SDK 검토, 장소/수거함 DB 구조 설계
-
-**2026년 6월**
-
-지도 API 연동, 백엔드 API 개발, 클라우드 서버 환경 구축, 핵심 기능 테스트
-
-**2026년 7월**
-
-프로토타입 1차 제작, 분리배출 가이드와 포인트 기능 연결, 사용자 테스트 준비
-
-**2026년 8월**
-
-피드백 기반 지도 UI 개선, 버그 수정, 실천 기록/랭킹 고도화
-
-**2026년 9~10월**
-
-최종 버전 안정화, 활동 성과 정리용 데이터 리포트 생성, 배포/시연 준비
+| 시기 | 내용 |
+|---|---|
+| **2026.04** | 자원순환과 CSV 확보·정제, 유사 서비스 벤치마킹 (현장 답사는 제공 데이터로 대체) |
+| **2026.05** | 기능 명세 확정, UI/UX 15화면 설계, 지도 SDK(Kakao) 결정, 데이터 구조 설계 |
+| **2026.06** | 설계 리뷰(office-hours→CEO→design→eng), SPEC 확정, 리프레임 반영 |
+| **2026.07** | **프로토타입 1차** — 인식·가이드·최근접·공백분석 데모 (라이브 백엔드 0) |
+| **2026.08** | FastAPI/PostGIS 척추, 실 이벤트 로깅, 지도 UI 고도화 |
+| **2026.09~10** | 최종 안정화, 성과 데이터 리포트, 배포·시연 준비 |
 
 ---
 
@@ -413,13 +307,9 @@ flutter run
 
 **팀명:** 찌릿
 
-**구성**
-
-* 김현준: 팀장 / 총괄
-* 김성연: 팀원
-* 권민재: 팀원
-
----
+* **김현준** — 팀장 / 총괄
+* **김성연** — 팀원
+* **권민재** — 팀원
 
 ## 라이선스
 
