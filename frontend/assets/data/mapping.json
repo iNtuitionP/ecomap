@@ -1,0 +1,13 @@
+{
+  "categories": [
+    { "id": "pet",       "label": "무색 페트병", "csv_flags": ["무색페트병"] },
+    { "id": "can",       "label": "캔/고철",     "csv_flags": ["금속캔", "고철"] },
+    { "id": "paper",     "label": "종이",         "csv_flags": ["종이"] },
+    { "id": "vinyl",     "label": "비닐",         "csv_flags": ["비닐"] },
+    { "id": "glass",     "label": "유리병",       "csv_flags": ["유리병"] },
+    { "id": "styrofoam", "label": "스티로폼",     "csv_flags": ["스티로폼"] },
+    { "id": "papercup",  "label": "종이팩",       "csv_flags": ["종이팩"] },
+    { "id": "etc",       "label": "기타",         "csv_flags": ["소형전자제품", "식용유", "의류", "일반쓰레기", "플라스틱"] }
+  ],
+  "confidence_threshold": 0.7
+}
