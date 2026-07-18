@@ -1,11 +1,11 @@
 {
-    "name": "ecomap",
-    "short_name": "ecomap",
+    "name": "에코지도 찌릿",
+    "short_name": "에코지도 찌릿",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#2E7D46",
+    "theme_color": "#2E7D46",
+    "description": "에코지도 찌릿 — 광명시 분리배출 안내·수거함 지도·공백분석",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

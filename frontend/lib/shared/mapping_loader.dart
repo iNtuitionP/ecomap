@@ -69,17 +69,30 @@ class RecycleMapping {
 
 /// shared/rules.json 의 카테고리별 배출 단계.
 class DisposalRule {
-  const DisposalRule({required this.steps, required this.caution});
+  const DisposalRule({
+    required this.label,
+    required this.steps,
+    required this.caution,
+    required this.source,
+  });
 
   factory DisposalRule.fromJson(Map<String, dynamic> json) {
     return DisposalRule(
+      label: json['label'] as String? ?? '',
       steps: (json['steps'] as List<dynamic>).cast<String>(),
       caution: json['caution'] as String,
+      source: json['source'] as String? ?? '',
     );
   }
 
+  /// 화면 표기용 카테고리 라벨 (예: 가이드 앱바 제목).
+  final String label;
+
   final List<String> steps;
   final String caution;
+
+  /// 근거 출처 (행정 신뢰성 — 가이드 하단 캡션 표기).
+  final String source;
 }
 
 /// 동기화된 에셋에서 매핑·룰을 읽는 로더. 테스트에서 [AssetBundle] 주입 가능.

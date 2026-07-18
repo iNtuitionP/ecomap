@@ -27,6 +27,22 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  sqflite_common_ffi: ^2.4.2
+  flutter_launcher_icons: ^0.14.4
+
+# 앱 아이콘 생성 — `dart run flutter_launcher_icons`.
+# 원본: assets/brand/logo_1024.png (포레스트그린 #2E7D46 배경 포함).
+flutter_launcher_icons:
+  image_path: "assets/brand/logo_1024.png"
+  android: true
+  ios: false
+  adaptive_icon_background: "#2E7D46"
+  adaptive_icon_foreground: "assets/brand/logo_1024.png"
+  web:
+    generate: true
+    image_path: "assets/brand/logo_1024.png"
+    background_color: "#2E7D46"
+    theme_color: "#2E7D46"
 
 flutter:
   uses-material-design: true
